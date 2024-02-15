@@ -1,0 +1,3 @@
+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
+
+$env:My_API="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"

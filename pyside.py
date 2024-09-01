@@ -43,6 +43,9 @@ class MainWindow(QWidget):
         self.ChatGPT_predict_button.clicked.connect(self.ChatGPT_predict)
         layout.addWidget(self.ChatGPT_predict_button)
 
+        # 設置窗口大小
+        self.resize(300, 500)  # 設置窗口大小
+
         # 設置窗口
         self.setLayout(layout)
         self.setWindowTitle('名片辨識')
@@ -51,22 +54,18 @@ class MainWindow(QWidget):
     def path_error_dialog(self):
         # 創建一個消息框
         dialog = QMessageBox(self)
-
         # 設置消息框的一些屬性
         dialog.setWindowTitle("路徑錯誤")
         dialog.setText("請先選擇路徑")
-
         # 添加標準按鈕
         dialog.setStandardButtons(QMessageBox.Ok)
-
         # 顯示對話框
         dialog.exec()
 
 
     def input_apikey(self):
-        api_key, ok_pressed = QInputDialog.getText(self, "輸入API key", "請輸入API key:")
+        api_key, ok_pressed = QInputDialog.getText(self, "輸入API key", "請輸入API key:", QLineEdit.Password) # 將此處設置為密文模式
         if ok_pressed:
-
             os.environ['My_API'] = api_key
             
 
@@ -92,7 +91,7 @@ class MainWindow(QWidget):
     def my_ocr(self):
         self.text_box.setText("") 
         if len(self.selected_file_path) != 0:
-            text = businesscard_ocr(self.selected_file_path)
+            text = businesscard_ocr(self.selected_file_path, self)
             self.text_box.append(text + "\n")
             self.texts = text
         else:
@@ -120,6 +119,7 @@ class MainWindow(QWidget):
             self.text_error_dialog()
 
     def ChatGPT_predict(self):
+        card_info = None
         if 'My_API' not in os.environ:  
             # 如果 My_API 不存在，則執行 input_apikey 函數以設置 API 金鑰
             self.input_apikey()

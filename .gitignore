@@ -1,1 +1,3 @@
 ignoredir/
+__pycache__/
+*.pyc

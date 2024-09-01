@@ -18,7 +18,7 @@ def drawboxes(image,x,y,w,h):
     cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
 # 圖片辨識、文字提取
-def businesscard_ocr(card_path):
+def businesscard_ocr(card_path, parent_window=None):
     # 開啟要進行OCR的圖像文件
     image = cv2.imread(card_path)
     # 將圖像轉換為灰度
@@ -99,8 +99,6 @@ def businesscard_ocr(card_path):
             else:
                 # 不在同一行，處理之前的同一行文本，然後重新開始新的一行
                 drawboxes(image, current_line_x - 3, current_line_y, square_width + 3, square_height)
-                # print(f"合併文本: {current_line}")
-                # print(f"{current_line}")
 
                 card_text += current_line + "\n"
                 current_line = text
@@ -112,16 +110,26 @@ def businesscard_ocr(card_path):
 
     # 最後一行文本
     if current_line:
-        # print(f"合併文本: {current_line}")
-        # print(f"{current_line}")
         card_text += current_line
         drawboxes(image, current_line_x - 3, current_line_y, square_width + 3, square_height)
 
 
     # 顯示圖像
-    cv2.imshow('Image with Text Boxes', image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        
+    new_width = int(image.shape[1] / 2)
+    new_height = int(image.shape[0] / 2)
+    new_dimensions = (new_width, new_height)
+    image = cv2.resize(image, new_dimensions, interpolation=cv2.INTER_LINEAR)
+
+    # 設定圖片出現位置
+    if parent_window:
+        main_window_pos = parent_window.pos()
+        cv2.namedWindow('Image with Text Boxes')
+        cv2.moveWindow('Image with Text Boxes', main_window_pos.x()+300, main_window_pos.y()+100)
+
+        cv2.imshow('Image with Text Boxes', image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     return card_text
 
@@ -129,7 +137,6 @@ def businesscard_ocr(card_path):
     
 #     card_text = businesscard_ocr(r"E:\ner_model\bussiness_card\card1.png")
 #     print(card_text)
-
 
 # 以ChatGPT進行分類
 def ChatGPT_prediction(filepath):

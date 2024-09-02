@@ -1,3 +1,4 @@
 ignoredir/
 __pycache__/
 *.pyc
+*.bak
